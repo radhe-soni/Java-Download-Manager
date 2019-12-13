@@ -26,45 +26,52 @@ OTHER DEALINGS IN THE SOFTWARE.
 package com.luugiathuy.apps.downloadmanager;
 
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
-public abstract class Downloader extends Observable implements Runnable{
-	
+public abstract class Downloader extends Observable implements Runnable
+{
+
 	protected URL fileUrl;
-	
+
 	protected String mOutputFolder;
-	
+
 	protected int mNumConnections;
-	
+
 	protected String mFileName;
-	
+
 	protected int fileSize;
-	
+
 	protected DOWNLOAD_STATUS state;
-	
+
 	protected int mDownloaded;
-	
+
 	protected List<DownloadThread> mListDownloadThread;
+
+	protected Instant initTime;
 	
-	
-	
+	protected javax.swing.JButton startDownloadButton;
 	/**
 	 * Constructor
+	 * 
 	 * @param fileURL
 	 * @param outputFolder
 	 * @param numConnections
 	 */
-	protected Downloader(URL url, String outputFolder, int numConnections) {
+	protected Downloader(URL url, String outputFolder, int numConnections)
+	{
 		fileUrl = url;
 		mOutputFolder = outputFolder;
 		mNumConnections = numConnections;
-		
+
 		// Get the file name from url path
 		String fileURL = url.getFile();
 		mFileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
@@ -72,69 +79,87 @@ public abstract class Downloader extends Observable implements Runnable{
 		fileSize = -1;
 		state = DOWNLOAD_STATUS.DOWNLOADING;
 		mDownloaded = 0;
-		
+
 		mListDownloadThread = new ArrayList<>();
+		startDownloadButton = new javax.swing.JButton();
+		startDownloadButton.setText("Add Download");
+		startDownloadButton.addActionListener(event -> download());
 	}
-	
-	public void pause() {
+
+	public void pause()
+	{
 		setState(DOWNLOAD_STATUS.PAUSED);
 	}
-	
-	public void resume() {
+
+	public void resume()
+	{
 		setState(DOWNLOAD_STATUS.DOWNLOADING);
 		download();
 	}
-	
-	public void cancel() {
+
+	public void cancel()
+	{
 		setState(DOWNLOAD_STATUS.CANCELLED);
 	}
-	
-	public String getURL() {
+
+	public String getURL()
+	{
 		return fileUrl.toString();
 	}
-	
-	
+
 	/**
 	 * Get the current progress of the download
 	 */
-	public float getProgress() {
-		return ((float)mDownloaded / fileSize) * 100;
+	public float getProgress()
+	{
+		
+		return ((float) mDownloaded / fileSize) * 100;
 	}
 	
-	
+	public float getDownloadSpeed()
+	{
+		Duration duration = Duration.between(initTime, Instant.now());
+		return ((float) mDownloaded)/(duration.getSeconds() * 1024);
+	}
+
 	/**
 	 * Set the state of the downloader
 	 */
-	protected void setState(DOWNLOAD_STATUS value) {
+	protected void setState(DOWNLOAD_STATUS value)
+	{
 		state = value;
 		stateChanged();
 	}
-	
+
 	/**
 	 * Start or resume download
 	 */
-	protected void download() {
-		Thread t = new Thread(this);
-		t.start();
+	protected void download()
+	{
+		initTime = Instant.now();
+		CompletableFuture.runAsync(this);
 	}
-	
+
 	protected void startDownloadThread(DownloadThread aThread)
 	{
 		aThread.download();
 		mListDownloadThread.add(aThread);
 	}
+
 	/**
 	 * Increase the downloaded size
 	 */
-	protected synchronized void downloaded(int value) {
+	protected synchronized void downloaded(int value)
+	{
 		mDownloaded += value;
 		stateChanged();
 	}
-	
+
 	/**
 	 * Set the state has changed and notify the observers
 	 */
-	protected void stateChanged() {
+	protected void stateChanged()
+	{
 		setChanged();
 		notifyObservers();
 	}

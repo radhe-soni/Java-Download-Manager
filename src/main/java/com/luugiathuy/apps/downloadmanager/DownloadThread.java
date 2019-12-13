@@ -1,6 +1,7 @@
 package com.luugiathuy.apps.downloadmanager;
 
 import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Thread to download part of a file
@@ -11,8 +12,7 @@ abstract class DownloadThread implements Runnable {
 	protected int mStartByte;
 	protected int mEndByte;
 	protected boolean mIsFinished;
-	protected Thread mThread;
-	
+	protected CompletableFuture<Void> future;
 	public DownloadThread(URL url, String outputFile, int startByte, int endByte) {
 		mURL = url;
 		mOutputFile = outputFile;
@@ -22,20 +22,12 @@ abstract class DownloadThread implements Runnable {
 		
 		
 	}
-	
-	/**
-	 * Get whether the thread is finished download the part of file
-	 */
 	public boolean isFinished() {
 		return mIsFinished;
 	}
 	
-	/**
-	 * Start or resume the download
-	 */
 	public void download() {
-		mThread = new Thread(this);
-		mThread.start();
+		future = CompletableFuture.runAsync(this);
 	}
 	
 	/**
@@ -43,7 +35,7 @@ abstract class DownloadThread implements Runnable {
 	 * @throws InterruptedException
 	 */
 	public void waitFinish() throws InterruptedException {
-		mThread.join();			
+		future.join();			
 	}
 	
 }

@@ -25,6 +25,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 package com.luugiathuy.apps.downloadmanager;
 
+import java.awt.Color;
 import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
@@ -50,7 +51,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer
 	private DownloadTableModel mTableModel;
 
 	private Downloader mSelectedDownloader;
-	
+
 	@Autowired
 	private DownloadManager downloadManager;
 
@@ -191,8 +192,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer
 						.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE))
 				.addContainerGap()));
 
-		layout.linkSize(javax.swing.SwingConstants.HORIZONTAL,
-				new java.awt.Component[] { jbnCancel, jbnExit, jbnPause, jbnRemove, jbnResume });
+		layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, jbnCancel, jbnExit, jbnPause, jbnRemove, jbnResume);
 
 		layout.setVerticalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(layout
 				.createSequentialGroup().addContainerGap()
@@ -249,8 +249,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer
 		URL verifiedUrl = DownloadManager.verifyURL(jtxURL.getText());
 		if (verifiedUrl != null)
 		{
-			Downloader download = downloadManager.createDownload(verifiedUrl,
-					DownloadManager.DEFAULT_OUTPUT_FOLDER);
+			Downloader download = downloadManager.createDownload(verifiedUrl, DownloadManager.DEFAULT_OUTPUT_FOLDER);
 			mTableModel.addNewDownload(download);
 			jtxURL.setText(""); // reset add text field
 		}
@@ -344,6 +343,10 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.put("ProgressBar.background", Color.ORANGE);
+			UIManager.put("ProgressBar.foreground", Color.BLUE);
+			UIManager.put("ProgressBar.selectionBackground", Color.RED);
+			UIManager.put("ProgressBar.selectionForeground", Color.GREEN);
 		}
 		catch (Exception e)
 		{
@@ -355,8 +358,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer
 			initComponents();
 			initialize();
 		});
-		
-		
+
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables

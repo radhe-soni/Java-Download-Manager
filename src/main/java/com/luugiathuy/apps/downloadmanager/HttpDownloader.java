@@ -47,8 +47,6 @@ public class HttpDownloader extends Downloader
 		super(url, outputFolder, numConnections);
 		this.config = config;
 		minDownloadSize = config.getBlockSize() * 100;
-		download();
-
 	}
 
 	void error(String message)
@@ -156,7 +154,8 @@ public class HttpDownloader extends Downloader
 
 			// start/end Byte for each thread
 			endByte = partSize - 1;
-			HttpDownloadThread aThread = new HttpDownloadThread(this, fileUrl, mOutputFolder + mFileName, startByte, endByte);
+			HttpDownloadThread aThread = new HttpDownloadThread(this, fileUrl, mOutputFolder + mFileName, startByte,
+					endByte);
 			startDownloadThread(aThread);
 			boolean breakLoop = false;
 			while (endByte < fileSize && !breakLoop)
@@ -174,7 +173,8 @@ public class HttpDownloader extends Downloader
 		}
 		else
 		{
-			HttpDownloadThread aThread = new HttpDownloadThread(this, fileUrl, mOutputFolder + mFileName, startByte, endByte);
+			HttpDownloadThread aThread = new HttpDownloadThread(this, fileUrl, mOutputFolder + mFileName, startByte,
+					endByte);
 			startDownloadThread(aThread);
 		}
 	}
@@ -187,8 +187,8 @@ public class HttpDownloader extends Downloader
 	private int getPartSize()
 	{
 		int partSize = Math.round(((float) fileSize / mNumConnections) / config.getBlockSize()) * config.getBlockSize();
-		log.info("Part size: " + partSize);
-		log.info("No. of parts" + fileSize/partSize);
+		log.info("Part size: {}", partSize);
+		log.info("No. of parts: {}", fileSize / partSize);
 		return partSize;
 	}
 }

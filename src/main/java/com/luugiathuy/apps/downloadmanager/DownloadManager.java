@@ -92,10 +92,16 @@ public class DownloadManager {
 	
 	public Downloader createDownload(URL verifiedURL, String outputFolder) {
 		HttpDownloader fd = context.getBean(HttpDownloader.class, verifiedURL, outputFolder, mNumConnPerDownload, config);
-		mDownloadList.add(fd);
+		startDownloadList(fd);
 		return fd;
 	}
 	
+	public void startDownloadList(HttpDownloader fd)
+	{
+		//fd.download();
+		mDownloadList.add(fd);
+	}
+
 	/**
 	 * Verify whether an URL is valid
 	 * @param fileURL
