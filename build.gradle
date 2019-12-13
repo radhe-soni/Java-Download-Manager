@@ -1,0 +1,20 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+	id 'eclipse-wtp'
+}
+eclipse.project {
+	natures 'org.eclipse.buildship.core.gradleprojectnature'
+}
+repositories {
+	jcenter()
+}
+dependencies {
+	compileOnly 'org.projectlombok:lombok:1.16.10'
+	testCompileOnly 'org.projectlombok:lombok:1.16.10'
+	testRuntime "cglib:cglib-nodep:3.1"
+	annotationProcessor "org.projectlombok:lombok:1.16.10"
+
+	implementation 'org.springframework.boot:spring-boot-starter'
+}
