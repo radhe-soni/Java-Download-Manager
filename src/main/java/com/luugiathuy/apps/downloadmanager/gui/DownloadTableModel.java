@@ -23,14 +23,19 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps.downloadmanager.gui;
 
 import java.util.Observable;
 import java.util.Observer;
+
 import javax.swing.JProgressBar;
 import javax.swing.table.AbstractTableModel;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.luugiathuy.apps.downloader.Downloader;
+import com.luugiathuy.apps.downloadmanager.DownloadManager;
 
 /**
  * This class manages the download table's data.

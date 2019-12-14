@@ -23,7 +23,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps.downloader;
 
 import java.net.URL;
 import java.time.Duration;
@@ -32,6 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.CompletableFuture;
+
+import com.luugiathuy.apps.downloadmanager.DOWNLOAD_STATUS;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -56,13 +59,11 @@ public abstract class Downloader extends Observable implements Runnable
 
 	protected List<DownloadThread> mListDownloadThread;
 
-	protected Instant initTime;
+	protected Instant initTime = Instant.now();
 	
-	protected javax.swing.JButton startDownloadButton;
 	/**
 	 * Constructor
 	 * 
-	 * @param fileURL
 	 * @param outputFolder
 	 * @param numConnections
 	 */
@@ -77,13 +78,12 @@ public abstract class Downloader extends Observable implements Runnable
 		mFileName = fileURL.substring(fileURL.lastIndexOf('/') + 1);
 		log.info("File name: " + mFileName);
 		fileSize = -1;
-		state = DOWNLOAD_STATUS.DOWNLOADING;
+		state = DOWNLOAD_STATUS.READY;
 		mDownloaded = 0;
 
 		mListDownloadThread = new ArrayList<>();
-		startDownloadButton = new javax.swing.JButton();
-		startDownloadButton.setText("Add Download");
-		startDownloadButton.addActionListener(event -> download());
+		
+		
 	}
 
 	public void pause()
@@ -134,8 +134,9 @@ public abstract class Downloader extends Observable implements Runnable
 	/**
 	 * Start or resume download
 	 */
-	protected void download()
+	public void download()
 	{
+		state = DOWNLOAD_STATUS.DOWNLOADING;
 		initTime = Instant.now();
 		CompletableFuture.runAsync(this);
 	}

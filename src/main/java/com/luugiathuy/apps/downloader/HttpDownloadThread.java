@@ -1,10 +1,13 @@
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps.downloader;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import com.luugiathuy.apps.downloadmanager.DOWNLOAD_STATUS;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

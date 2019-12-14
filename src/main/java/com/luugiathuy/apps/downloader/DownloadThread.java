@@ -1,4 +1,4 @@
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps.downloader;
 
 import java.net.URL;
 import java.util.concurrent.CompletableFuture;

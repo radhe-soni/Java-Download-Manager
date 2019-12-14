@@ -1,4 +1,4 @@
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

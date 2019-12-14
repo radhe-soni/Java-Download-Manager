@@ -23,13 +23,17 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-package com.luugiathuy.apps.downloadmanager;
+package com.luugiathuy.apps.downloader;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.luugiathuy.apps.downloadmanager.DOWNLOAD_STATUS;
+import com.luugiathuy.apps.downloadmanager.DownloadProps;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

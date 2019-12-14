@@ -32,6 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.luugiathuy.apps.downloader.Downloader;
+import com.luugiathuy.apps.downloader.HttpDownloader;
+
 @Component
 public class DownloadManager {
 	
