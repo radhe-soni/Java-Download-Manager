@@ -1,0 +1,9 @@
+{
+	"rootUrl" : "https://repo1.maven.org/maven2/org/javers/",
+	"artifacts": [
+		{
+			"artifactId" : "javers-core",
+			"artifactVersion": "5.8.7"
+		}
+	]
+}

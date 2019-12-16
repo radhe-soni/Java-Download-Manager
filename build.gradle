@@ -10,6 +10,11 @@ targetCompatibility = 13
 eclipse.project {
 	natures 'org.eclipse.buildship.core.gradleprojectnature'
 }
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
 repositories {
 	jcenter()
 }
@@ -19,4 +24,8 @@ dependencies {
 	annotationProcessor "org.projectlombok:lombok"
 
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'com.google.code.gson:gson'
+	implementation 'org.dom4j:dom4j:2.1.1'
+	
+	
 }

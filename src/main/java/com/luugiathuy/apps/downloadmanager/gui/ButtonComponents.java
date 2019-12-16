@@ -15,6 +15,7 @@ public class ButtonComponents {
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 
 	javax.swing.JButton jbnAdd;
+	javax.swing.JButton jbnAddInfoFile;
 	javax.swing.JButton jbnStart;
 	javax.swing.JButton jbnCancel;
 	javax.swing.JButton jbnExit;
@@ -69,6 +70,12 @@ public class ButtonComponents {
 		jbnAdd = new javax.swing.JButton();
 		jbnAdd.setText("Add Download");
 		jbnAdd.addActionListener(jbnAddActionPerformed);
+	}
+	
+	public void initAddInfoFileButton(ActionListener jbnAddActionPerformed) {
+		jbnAddInfoFile = new javax.swing.JButton();
+		jbnAddInfoFile.setText("Process");
+		jbnAddInfoFile.addActionListener(jbnAddActionPerformed);
 	}
 
 	public void updateButtons(Downloader mSelectedDownloader) {
@@ -127,6 +134,7 @@ public class ButtonComponents {
 		return layout.createSequentialGroup()
 				.addComponent(jbnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 104,
 						javax.swing.GroupLayout.PREFERRED_SIZE)
+				.addGap(18, 18, 18)
 				.addComponent(jbnPause, javax.swing.GroupLayout.PREFERRED_SIZE, 104,
 						javax.swing.GroupLayout.PREFERRED_SIZE)
 				.addGap(18, 18, 18)

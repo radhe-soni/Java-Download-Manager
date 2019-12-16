@@ -110,9 +110,19 @@ public class DownloadManager {
 	 * @param fileURL
 	 * @return the verified URL, null if invalid
 	 */
-	public static URL verifyURL(String fileURL) {
+	public static URL verifyFileURL(String fileURL) {
 		// Only allow HTTP URLs.
-        if (!fileURL.toLowerCase().startsWith("http://"))
+        URL verifiedUrl = verifyUrl(fileURL);
+        
+        // Make sure URL specifies a file.
+        if (verifiedUrl.getFile().length() < 2)
+            return null;
+        
+        return verifiedUrl;
+	}
+
+	public static URL verifyUrl(String fileURL) {
+		if (!(fileURL.toLowerCase().startsWith("http://") || fileURL.toLowerCase().startsWith("https://")))
             return null;
         
         // Verify format of URL.
@@ -122,12 +132,7 @@ public class DownloadManager {
         } catch (Exception e) {
             return null;
         }
-        
-        // Make sure URL specifies a file.
-        if (verifiedUrl.getFile().length() < 2)
-            return null;
-        
-        return verifiedUrl;
+		return verifiedUrl;
 	}
 
 }

@@ -27,26 +27,32 @@ package com.luugiathuy.apps.downloadmanager.gui;
 
 import java.awt.Color;
 import java.net.URL;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
 import javax.swing.GroupLayout.SequentialGroup;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.OceanTheme;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.luugiathuy.apps.downloader.Downloader;
-import com.luugiathuy.apps.downloadmanager.DOWNLOAD_STATUS;
 import com.luugiathuy.apps.downloadmanager.DownloadManager;
 import com.luugiathuy.apps.downloadmanager.ProgressRenderer;
+import com.luugiathuy.apps.service.DefaultDownloadItemsService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +71,8 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	private DownloadManager downloadManager;
 	@Autowired
 	private ButtonComponents buttonComponents;
+	@Autowired
+	private DefaultDownloadItemsService defaultDownloadItemsService;
 	private boolean mIsClearing;
 
 	private void initialize() {
@@ -98,6 +106,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	private void initComponents() {
 
 		jtxURL = new javax.swing.JTextField();
+		jtxDownloadInfoFilePath = new javax.swing.JTextField();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		jtbDownload = new javax.swing.JTable();
 
@@ -106,7 +115,8 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 		setResizable(false);
 
 		initializeButtons();
-
+		downloadInfoLabel = new javax.swing.JLabel();
+		downloadInfoLabel.setText("Artifacts Info File");
 		jtbDownload.setModel(mTableModel);
 		jScrollPane1.setViewportView(jtbDownload);
 
@@ -126,19 +136,28 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 				.addGroup(createActingComponentsVertical(layout)));
 	}
 
-	private SequentialGroup createActingComponentsVertical(javax.swing.GroupLayout layout) {
-		return layout.createSequentialGroup().addContainerGap()
-				.addGroup(createTopPanelVertical(layout))
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-				.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
-				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+	private SequentialGroup createActingComponentsVertical(GroupLayout layout) {
+		return layout.createSequentialGroup().addContainerGap().addGroup(createDownloadInfoPanelVertical(layout))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addGroup(createAddNewDownloadVertical(layout))
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+				.addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+				.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
 				.addGroup(buttonComponents.createBottomButtonPanelVertical(layout)).addContainerGap();
 	}
 
-	private ParallelGroup createTopPanelVertical(javax.swing.GroupLayout layout) {
-		return layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-				.addComponent(jtxURL, javax.swing.GroupLayout.PREFERRED_SIZE,
-						javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+	private ParallelGroup createDownloadInfoPanelVertical(GroupLayout layout) {
+		return layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(downloadInfoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,
+						GroupLayout.PREFERRED_SIZE)
+				.addComponent(jtxDownloadInfoFilePath, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE,
+						GroupLayout.PREFERRED_SIZE)
+				.addComponent(buttonComponents.jbnAddInfoFile);
+	}
+
+	private ParallelGroup createAddNewDownloadVertical(javax.swing.GroupLayout layout) {
+		return layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+				.addComponent(jtxURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addComponent(buttonComponents.jbnAdd);
 	}
 
@@ -150,11 +169,18 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	private ParallelGroup createActingComponents(javax.swing.GroupLayout layout) {
 		return layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
 				.addGroup(buttonComponents.createBottomButtonPanel(layout))
-				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, createTopPanelHorizontal(layout))
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+						.addComponent(downloadInfoLabel, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE,
+								GroupLayout.PREFERRED_SIZE)
+						.addComponent(jtxDownloadInfoFilePath, javax.swing.GroupLayout.DEFAULT_SIZE, 654,
+								Short.MAX_VALUE)
+						.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+						.addComponent(buttonComponents.jbnAddInfoFile))
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, createAddNewDownloadHorizontal(layout))
 				.addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 776, Short.MAX_VALUE);
 	}
 
-	private SequentialGroup createTopPanelHorizontal(javax.swing.GroupLayout layout) {
+	private SequentialGroup createAddNewDownloadHorizontal(javax.swing.GroupLayout layout) {
 		return layout.createSequentialGroup()
 				.addComponent(jtxURL, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
 				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -191,7 +217,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private void initializeButtons() {
 		buttonComponents.initAddButton(this::jbnAddActionPerformed);
-
+		buttonComponents.initAddInfoFileButton(this::jbnAddInfoFileActionPerformed);
 		buttonComponents.initStartButton(this::jbnStartActionPerformed);
 
 		buttonComponents.initPauseButton(this::jbnPauseActionPerformed);
@@ -243,7 +269,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	}// GEN-LAST:event_jbnExitActionPerformed
 
 	private void jbnAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbnAddActionPerformed
-		URL verifiedUrl = DownloadManager.verifyURL(jtxURL.getText());
+		URL verifiedUrl = DownloadManager.verifyFileURL(jtxURL.getText());
 		if (verifiedUrl != null) {
 			Downloader download = downloadManager.createDownload(verifiedUrl, DownloadManager.DEFAULT_OUTPUT_FOLDER);
 			mTableModel.addNewDownload(download);
@@ -253,14 +279,28 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 		}
 	}// GEN-LAST:event_jbnAddActionPerformed
 
+	private void jbnAddInfoFileActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbnAddActionPerformed
+		String downloadInfoJsonFile = jtxDownloadInfoFilePath.getText();
+		try {
+			Stream<Downloader> downloaders = defaultDownloadItemsService.getDownloaders(downloadInfoJsonFile);
+			downloaders.forEach(mTableModel::addNewDownload);
+		} catch (RuntimeException re) {//
+			log.error("Error creating download list from download info file", re);
+			JOptionPane.showMessageDialog(this, "Error creating download list from download info file", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
 	@PostConstruct
 	public void postConstruct() {
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.setLookAndFeel(new MetalLookAndFeel());
+			MetalLookAndFeel.setCurrentTheme(new OceanTheme());
 			UIManager.put("ProgressBar.background", Color.ORANGE);
 			UIManager.put("ProgressBar.foreground", Color.BLUE);
 			UIManager.put("ProgressBar.selectionBackground", Color.RED);
 			UIManager.put("ProgressBar.selectionForeground", Color.GREEN);
+			UIManager.put("Label.background", Color.ORANGE);
 		} catch (Exception e) {
 			log.error("look and feel could not intiated", e);
 		}
@@ -276,4 +316,6 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JTable jtbDownload;
 	private javax.swing.JTextField jtxURL;
+	private javax.swing.JTextField jtxDownloadInfoFilePath;
+	private javax.swing.JLabel downloadInfoLabel;
 }
