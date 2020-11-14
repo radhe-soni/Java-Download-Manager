@@ -48,7 +48,7 @@ public class DefaultDownloadItemsService {
 
 	private Stream<URL> getLatestArtifactsUrl(DownloadInfo downloadInfo, URL verifiedUrl) {
 		return getArtifactsRootUrl(downloadInfo, verifiedUrl)
-				.map(artifactRootUrl -> getLatestArtifactUrl(artifactRootUrl)).filter(Objects::nonNull);
+				.map(this::getLatestArtifactUrl).filter(Objects::nonNull);
 	}
 
 	private Stream<URL> getArtifactsRootUrl(DownloadInfo downloadInfo, URL verifiedUrl) {

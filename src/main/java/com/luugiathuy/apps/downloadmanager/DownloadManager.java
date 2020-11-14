@@ -28,13 +28,16 @@ package com.luugiathuy.apps.downloadmanager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.luugiathuy.apps.downloader.Downloader;
 import com.luugiathuy.apps.downloader.HttpDownloader;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class DownloadManager {
 	
@@ -49,12 +52,12 @@ public class DownloadManager {
 
 	// Member variables
 	private int mNumConnPerDownload;
-	private ArrayList<Downloader> mDownloadList;
+	private List<Downloader> mDownloadList;
 	
 	/** Protected constructor */
 	public DownloadManager() {
 		mNumConnPerDownload = DEFAULT_NUM_CONN_PER_DOWNLOAD;
-		mDownloadList = new ArrayList<>();
+		mDownloadList = new Vector<>();
 	}
 	
 	/**
@@ -67,7 +70,7 @@ public class DownloadManager {
 	/**
 	 * Set the max number of connections per download
 	 */
-	public void SetNumConnPerDownload(int value) {
+	public void setNumConnPerDownload(int value) {
 		mNumConnPerDownload = value;
 	}
 	
@@ -77,11 +80,14 @@ public class DownloadManager {
 	 * @return
 	 */
 	public Downloader getDownload(int index) {
+		Downloader downloader = mDownloadList.get(index);
+		log.info("file {} requested", downloader.getMFileName());
 		return mDownloadList.get(index);
 	}
 	
 	public void removeDownload(int index) {
-		mDownloadList.remove(index);
+		Downloader remove = mDownloadList.remove(index);
+		log.info("removing file {} requested", remove.getMFileName());
 	}
 	
 	/**

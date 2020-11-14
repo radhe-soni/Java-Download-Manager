@@ -27,11 +27,9 @@ package com.luugiathuy.apps.downloadmanager.gui;
 
 import java.awt.Color;
 import java.net.URL;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.stream.Stream;
-
 import javax.annotation.PostConstruct;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.ParallelGroup;
@@ -41,19 +39,17 @@ import javax.swing.JProgressBar;
 import javax.swing.LayoutStyle;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-
 import com.luugiathuy.apps.downloader.Downloader;
 import com.luugiathuy.apps.downloadmanager.DownloadManager;
 import com.luugiathuy.apps.downloadmanager.ProgressRenderer;
 import com.luugiathuy.apps.service.DefaultDownloadItemsService;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -62,6 +58,8 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private static final long serialVersionUID = 8489399426552541643L;
 
+	@Autowired
+	ConfigurableApplicationContext ctx;
 	@Autowired
 	private DownloadTableModel mTableModel;
 
@@ -77,11 +75,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private void initialize() {
 		// Set up table
-		jtbDownload.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				tableSelectionChanged();
-			}
-		});
+		jtbDownload.getSelectionModel().addListSelectionListener(e -> tableSelectionChanged());
 
 		// Allow only one row at a time to be selected.
 		jtbDownload.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -105,7 +99,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
-		jtxURL = new javax.swing.JTextField();
+		downloadableURL = new javax.swing.JTextField();
 		jtxDownloadInfoFilePath = new javax.swing.JTextField();
 		jScrollPane1 = new javax.swing.JScrollPane();
 		jtbDownload = new javax.swing.JTable();
@@ -157,7 +151,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private ParallelGroup createAddNewDownloadVertical(javax.swing.GroupLayout layout) {
 		return layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-				.addComponent(jtxURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addComponent(downloadableURL, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 				.addComponent(buttonComponents.jbnAdd);
 	}
 
@@ -182,7 +176,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private SequentialGroup createAddNewDownloadHorizontal(javax.swing.GroupLayout layout) {
 		return layout.createSequentialGroup()
-				.addComponent(jtxURL, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
+				.addComponent(downloadableURL, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
 				.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 				.addComponent(buttonComponents.jbnAdd);
 	}
@@ -266,14 +260,16 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private void jbnExitActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbnExitActionPerformed
 		setVisible(false);
+		int exitCode = SpringApplication.exit(ctx, () -> 0);
+		System.exit(exitCode);
 	}// GEN-LAST:event_jbnExitActionPerformed
 
 	private void jbnAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbnAddActionPerformed
-		URL verifiedUrl = DownloadManager.verifyFileURL(jtxURL.getText());
+		URL verifiedUrl = DownloadManager.verifyFileURL(downloadableURL.getText());
 		if (verifiedUrl != null) {
 			Downloader download = downloadManager.createDownload(verifiedUrl, DownloadManager.DEFAULT_OUTPUT_FOLDER);
 			mTableModel.addNewDownload(download);
-			jtxURL.setText(""); // reset add text field
+			downloadableURL.setText(""); // reset add text field
 		} else {
 			JOptionPane.showMessageDialog(this, "Invalid Download URL", "Error", JOptionPane.ERROR_MESSAGE);
 		}
@@ -315,7 +311,7 @@ public class DownloadManagerGUI extends javax.swing.JFrame implements Observer {
 
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JTable jtbDownload;
-	private javax.swing.JTextField jtxURL;
+	private javax.swing.JTextField downloadableURL;
 	private javax.swing.JTextField jtxDownloadInfoFilePath;
 	private javax.swing.JLabel downloadInfoLabel;
 }
